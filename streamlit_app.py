@@ -19,7 +19,7 @@
     
 #    return results
 
-
+import streamlit as st
 import pinecone
 import numpy as np
  
