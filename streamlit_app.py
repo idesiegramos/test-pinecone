@@ -20,9 +20,9 @@
 #    return results
 
 import streamlit as st
-import pinecone
+from pinecone import Pinecone, ServerlessSpec
 import numpy as np
- 
+
 
 OPENAI_API_KEY = st.secrets.api_openai
 PINECONE_API_KEY = st.secrets.api_pinecone
@@ -32,16 +32,23 @@ print("'Secretos' cargados correctamente")
 
 
 # Configura Pinecone
-api_key = PINECONE_API_KEY  # Reemplaza con tu API key
-pinecone.init(api_key=api_key, environment="us-east-1")  # Cambia el entorno si es necesario
- 
-# Crea un nuevo índice
-index_name = "mi_index"
-if index_name not in pinecone.list_indexes():
-    pinecone.create_index(index_name, dimension=128)  # Ajusta la dimensión según tus necesidades
+pc = Pinecone(api_key = PINECONE_API_KEY)
+
+# Now do stuff
+if 'my_index' not in pc.list_indexes().names():
+    pc.create_index(
+        name='my_index', 
+        dimension=1536, 
+        metric='euclidean',
+        spec=ServerlessSpec(
+            cloud='aws',
+            region='us-east-1'
+            )
+        )
+
  
 # Conéctate al índice
-index = pinecone.Index(index_name)
+index = pc.Index(index_name)
  
 # Añade vectores al índice
 vectors = np.random.random((5, 128)).astype(np.float32)  # Ejemplo de vectores aleatorios
@@ -52,7 +59,12 @@ index.upsert(vectors=vectors, ids=ids)
 query_vector = np.random.random(128).astype(np.float32)  # Vector de consulta aleatorio
 response = index.query(queries=[query_vector], top_k=3)  # Ajusta top_k según tus necesidades
 print(response)
- 
+
+
+#########3
+
+
+
 # Borra el índice (opcional)
 # pinecone.delete_index(index_name)
 
