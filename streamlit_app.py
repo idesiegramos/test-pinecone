@@ -46,7 +46,7 @@ if 'my_index' not in pc.list_indexes().names():
             )
         )
 
-index_name = 'idesieindex'
+index_name = 'my_index'
 # Conéctate al índice
 index = pc.Index(index_name)
  
